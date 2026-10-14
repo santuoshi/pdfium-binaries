@@ -8,6 +8,7 @@ TARGET_ENVIRONMENT=${PDFium_TARGET_ENVIRONMENT:-}
 ENABLE_V8=${PDFium_ENABLE_V8:-false}
 IS_DEBUG=${PDFium_IS_DEBUG:-false}
 BUILD_TYPE=${PDFium_BUILD_TYPE:-shared}
+WASM_MINIMAL=${PDFium_WASM_MINIMAL:-false}
 
 mkdir -p "$BUILD"
 
@@ -17,12 +18,18 @@ mkdir -p "$BUILD"
   echo "pdf_use_partition_alloc = false"
   echo "target_cpu = \"$TARGET_CPU\""
   echo "target_os = \"$OS\""
-  echo "pdf_enable_v8 = $ENABLE_V8"
-  echo "pdf_enable_xfa = $ENABLE_V8"
+  EFFECTIVE_ENABLE_V8=$ENABLE_V8
+  if [ "$OS" == "emscripten" ] && [ "$WASM_MINIMAL" == "true" ]; then
+    # Minimal wasm profile: keep read + render capabilities, drop script/form stacks.
+    EFFECTIVE_ENABLE_V8=false
+  fi
+
+  echo "pdf_enable_v8 = $EFFECTIVE_ENABLE_V8"
+  echo "pdf_enable_xfa = $EFFECTIVE_ENABLE_V8"
   echo "treat_warnings_as_errors = false"
   echo "is_component_build = false"
 
-  if [ "$ENABLE_V8" == "true" ]; then
+  if [ "$EFFECTIVE_ENABLE_V8" == "true" ]; then
     echo "v8_use_external_startup_data = false"
     echo "v8_enable_i18n_support = false"
   fi
@@ -76,7 +83,7 @@ mkdir -p "$BUILD"
       echo 'pdf_is_complete_lib = true'
       echo 'is_clang = false'
       echo 'use_custom_libcxx = false'
-      if [ "$ENABLE_V8" == "true" ]; then
+      if [ "$EFFECTIVE_ENABLE_V8" == "true" ]; then
         # Set a toolchain with the same bitness as the target CPU
         echo "v8_snapshot_toolchain = \"//build/toolchain/linux:x86\""
         # Don't try to build libc++ because it requires GCC 14+

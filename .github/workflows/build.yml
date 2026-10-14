@@ -46,6 +46,11 @@ on:
         type: string
         required: false
         default: 3.1.72
+      wasm_minimal:
+        description: Build minimal WASM exports/profile
+        type: boolean
+        required: false
+        default: false
     secrets:
       MUSL_URL:
         description: Optional mirror of musl.cc
@@ -74,6 +79,7 @@ jobs:
       PDFium_TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
       PDFium_ENABLE_V8: ${{ inputs.enable_v8 }}
       PDFium_BUILD_TYPE: ${{ inputs.build_type }}
+      PDFium_WASM_MINIMAL: ${{ inputs.wasm_minimal }}
       PDFium_VERSION: ${{ inputs.version }}
       EMSDK_VERSION: ${{ inputs.emsdk_version }}
       MUSL_URL: ${{ secrets.MUSL_URL }}
@@ -87,6 +93,7 @@ jobs:
           [ "$PDFium_TARGET_OS" != "emscripten" ] && ARTIFACT="$ARTIFACT-$PDFium_TARGET_OS"
           [ "$PDFium_TARGET_ENVIRONMENT" != "" ] && ARTIFACT="$ARTIFACT-$PDFium_TARGET_ENVIRONMENT"
           ARTIFACT="$ARTIFACT-$PDFium_TARGET_CPU"
+          [ "$PDFium_WASM_MINIMAL" == "true" ] && ARTIFACT="$ARTIFACT-minimal"
           [ "$PDFium_BUILD_TYPE" == "static" ] && ARTIFACT="$ARTIFACT-static"
           [ "$IS_DEBUG" == "true" ] && ARTIFACT="$ARTIFACT-debug"
           echo "artifact=$ARTIFACT" >> $GITHUB_OUTPUT

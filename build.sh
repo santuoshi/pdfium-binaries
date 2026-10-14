@@ -25,11 +25,12 @@ Options:
   -g 0-10   = Go immediately to step n (default=0)
   -d        = debug build
   -s        = static build (experimental)
-  -j        = enable v8"
+  -j        = enable v8
+  -w        = wasm minimal exports/profile"
   exit
 fi
 
-while getopts "b:djmsg:" OPTION
+while getopts "b:djmswg:" OPTION
 do
   case $OPTION in
     b)
@@ -46,6 +47,10 @@ do
 
     s)
       export PDFium_BUILD_TYPE="static"
+      ;;
+
+    w)
+      export PDFium_WASM_MINIMAL=true
       ;;
 
     g)

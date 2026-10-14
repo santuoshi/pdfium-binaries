@@ -4,12 +4,18 @@ SOURCE=${PDFium_SOURCE_DIR:-pdfium}
 BUILD_DIR=${PDFium_BUILD_DIR:-$SOURCE/out}
 TARGET_CPU=${PDFium_TARGET_CPU:?}
 IS_DEBUG=${PDFium_IS_DEBUG:-false}
+WASM_MINIMAL=${PDFium_WASM_MINIMAL:-false}
 
 ninja -C "$BUILD_DIR" pdfium
 
 if [ "$TARGET_CPU" == "wasm" ]; then
   LIBPDFIUMA="$BUILD_DIR/obj/libpdfium.a"
-  EXPORTED_FUNCTIONS=$(llvm-nm $LIBPDFIUMA --format=just-symbols | grep "^FPDF\|^FSDK\|^FORM\|^IFSDK" | sed 's/^/_/' | paste -sd "," -)
+  if [[ "$WASM_MINIMAL" == "true" ]]; then
+    # Read + render only subset used by lightweight wasm clients.
+    EXPORTED_FUNCTIONS="_FPDF_InitLibrary,_FPDF_DestroyLibrary,_FPDF_LoadMemDocument,_FPDF_CloseDocument,_FPDF_GetPageCount,_FPDF_LoadPage,_FPDF_ClosePage,_FPDF_GetPageWidthF,_FPDF_GetPageHeightF,_FPDFBitmap_Create,_FPDFBitmap_Destroy,_FPDFBitmap_FillRect,_FPDFBitmap_GetBuffer,_FPDF_RenderPageBitmap,_FPDF_GetLastError"
+  else
+    EXPORTED_FUNCTIONS=$(llvm-nm $LIBPDFIUMA --format=just-symbols | grep "^FPDF\|^FSDK\|^FORM\|^IFSDK" | sed 's/^/_/' | paste -sd "," -)
+  fi
   EMCC_ARGS=(
     -s ALLOW_MEMORY_GROWTH=1
     -s ALLOW_TABLE_GROWTH=1

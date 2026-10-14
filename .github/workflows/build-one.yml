@@ -53,6 +53,11 @@ on:
         type: string
         required: false
         default: 3.1.72
+      wasm_minimal:
+        description: Build minimal WASM exports/profile
+        type: boolean
+        required: false
+        default: false
       is_debug:
         description: Is debug
         type: boolean
@@ -79,3 +84,4 @@ jobs:
       target_environment: ${{ github.event.inputs.target_environment }}
       enable_v8: ${{ github.event.inputs.enable_v8 == 'true' }}
       emsdk_version: ${{ github.event.inputs.emsdk_version }}
+      wasm_minimal: ${{ github.event.inputs.wasm_minimal == 'true' }}
