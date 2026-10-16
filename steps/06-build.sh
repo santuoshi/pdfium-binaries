@@ -12,7 +12,7 @@ if [ "$TARGET_CPU" == "wasm" ]; then
   LIBPDFIUMA="$BUILD_DIR/obj/libpdfium.a"
   if [[ "$WASM_MINIMAL" == "true" ]]; then
     # Read + render only subset used by lightweight wasm clients.
-    EXPORTED_FUNCTIONS="_FPDF_InitLibrary,_FPDF_DestroyLibrary,_FPDF_LoadMemDocument,_FPDF_CloseDocument,_FPDF_GetPageCount,_FPDF_LoadPage,_FPDF_ClosePage,_FPDF_GetPageWidthF,_FPDF_GetPageHeightF,_FPDFBitmap_Create,_FPDFBitmap_Destroy,_FPDFBitmap_FillRect,_FPDFBitmap_GetBuffer,_FPDF_RenderPageBitmap,_FPDF_GetDocPermissions,_FPDF_GetDocUserPermissions,_FPDF_GetLastError"
+    EXPORTED_FUNCTIONS="_FPDF_InitLibrary,_FPDF_InitLibraryWithConfig,_FPDF_DestroyLibrary,_FPDF_LoadMemDocument,_FPDF_CloseDocument,_FPDF_GetPageCount,_FPDF_LoadPage,_FPDF_ClosePage,_FPDF_GetPageWidthF,_FPDF_GetPageHeightF,_FPDFBitmap_Create,_FPDFBitmap_Destroy,_FPDFBitmap_FillRect,_FPDFBitmap_GetBuffer,_FPDF_RenderPageBitmap,_FPDF_GetDocPermissions,_FPDF_GetDocUserPermissions,_FPDF_GetLastError"
   else
     EXPORTED_FUNCTIONS=$(llvm-nm $LIBPDFIUMA --format=just-symbols | grep "^FPDF\|^FSDK\|^FORM\|^IFSDK" | sed 's/^/_/' | paste -sd "," -)
   fi
