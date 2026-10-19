@@ -258,6 +258,14 @@ However, our repository comes with a convenience script to run a local build, an
 ./build.sh -s linux arm64
 ```
 
+For a WebAssembly (`wasm32`) build, run:
+
+```
+./build.sh emscripten wasm
+```
+
+The artifacts include `staging/lib/libpdfium.a`.
+
 This script reproduces the build steps used in our GitHub workflows, so it is only tested on operating systems used by GitHub-hosted runners (for example Ubuntu), and **we don't plan to make this script portable**.
 
 Alternatively, you can trigger the reusable workflow `build.yml` with `build_type=static` from your own workflow, or fork this repo and start the `build-one.yml` manually from the Actions tab.

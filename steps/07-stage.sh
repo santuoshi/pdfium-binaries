@@ -52,7 +52,12 @@ case "$OS-$BUILD_TYPE" in
     mv "$BUILD/libpdfium.dylib" "$STAGING_LIB"
     ;;
 
-  emscripten-*)
+  emscripten-static)
+    mv "$BUILD/obj/libpdfium.a" "$STAGING_LIB"
+    ;;
+
+  emscripten-shared)
+    mv "$BUILD/obj/libpdfium.a" "$STAGING_LIB"
     mv "$BUILD/pdfium.html" "$STAGING_LIB"
     mv "$BUILD/pdfium.js" "$STAGING_LIB"
     mv "$BUILD/pdfium.wasm" "$STAGING_LIB"
